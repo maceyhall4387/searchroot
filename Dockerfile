@@ -1,7 +1,6 @@
 FROM docker.io/searxng/searxng:latest
 
 # Clone the theme repo
-RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 RUN git clone https://github.com/simply-nord/simply-nord.git /tmp/theme-repo
 
 COPY searxng-custom/core-config/settings.yml /etc/searxng/settings.yml
