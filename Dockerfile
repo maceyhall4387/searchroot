@@ -1,16 +1,18 @@
 FROM docker.io/searxng/searxng:latest
 
-# Install envsubst (needed to substitute env vars)
-RUN apk add --no-cache gettext
+# Clone the theme repo
+RUN apk add --no-cache git
+RUN git clone https://github.com/simply-nord/simply-nord.git /tmp/theme-repo
 
-# Copy and process settings.yml with environment variables
-COPY core-config/settings.yml /tmp/settings.yml.template
-RUN envsubst < /tmp/settings.yml.template > /etc/searxng/settings.yml
+COPY core-config/settings.yml /etc/searxng/settings.yml
+COPY core-config/static/ /usr/local/searxng/searx/static/
 
-COPY static/themes/ /usr/local/searxng/searx/static/themes/
-COPY static/images/ /usr/local/searxng/searx/static/images/
+# Mount the cloned theme files
+RUN cp -r /tmp/theme-repo/out/crabx /usr/local/searxng/searx/templates/simple
+RUN cp -r /tmp/theme-repo/out/crabx-static/themes/simple /usr/local/searxng/searx/static/themes/simple
 
 RUN chown -R searxng:searxng /etc/searxng /usr/local/searxng
+RUN rm -rf /tmp/theme-repo
 
 EXPOSE 10000
 
