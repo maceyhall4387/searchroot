@@ -21,6 +21,6 @@ RUN cp -r /tmp/theme-repo/out/crabx-static/themes/simple /usr/local/searxng/sear
 RUN chown -R searxng:searxng /etc/searxng /usr/local/searxng
 RUN rm -rf /tmp/theme-repo /tmp/theme.zip
 
-EXPOSE 8080
+EXPOSE 10000
 
 CMD ["searxng"]
