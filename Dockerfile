@@ -5,7 +5,7 @@ RUN apk add --no-cache git
 RUN git clone https://github.com/simply-nord/simply-nord.git /tmp/theme-repo
 
 COPY core-config/settings.yml /etc/searxng/settings.yml
-COPY core-config/static/ /usr/local/searxng/searx/static/
+COPY static/ /usr/local/searxng/searx/static/
 
 # Mount the cloned theme files
 RUN cp -r /tmp/theme-repo/out/crabx /usr/local/searxng/searx/templates/simple
