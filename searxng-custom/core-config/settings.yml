@@ -1,0 +1,12 @@
+server:
+  port: 10000
+  bind_address: "0.0.0.0"
+  base_url: "${SEARXNG_BASE_URL}"
+  secret_key: "${SEARXNG_SECRET_KEY}"
+
+ui:
+  default_theme: "google"
+
+search:
+  safe_search: 0
+  autocomplete: "duckduckgo"
