@@ -4,8 +4,8 @@ FROM docker.io/searxng/searxng:latest
 RUN apk add --no-cache git
 RUN git clone https://github.com/simply-nord/simply-nord.git /tmp/theme-repo
 
-COPY core-config/settings.yml /etc/searxng/settings.yml
-COPY static/ /usr/local/searxng/searx/static/
+COPY searxng-custom/core-config/settings.yml /etc/searxng/settings.yml
+COPY searxng-custom/static/ /usr/local/searxng/searx/static/
 
 # Mount the cloned theme files
 RUN cp -r /tmp/theme-repo/out/crabx /usr/local/searxng/searx/templates/simple
