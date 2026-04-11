@@ -1,15 +1,17 @@
-FROM node:20 AS build
-RUN wget https://github.com/Brainicism/bgutil-ytdlp-pot-provider/archive/refs/heads/master.zip && unzip master.zip
-WORKDIR /bgutil-ytdlp-pot-provider-master/server
-RUN yarn install --frozen-lockfile
-RUN npx tsc
+FROM node:20-alpine
 
-FROM node:20-slim
 WORKDIR /app
-COPY --from=build /bgutil-ytdlp-pot-provider-master/server/build /app/build
-COPY --from=build /bgutil-ytdlp-pot-provider-master/server/package.json /app/package.json
-COPY --from=build /bgutil-ytdlp-pot-provider-master/server/yarn.lock /app/yarn.lock
-RUN yarn install --production
 
-COPY bgutil-ytdlp-pot-provider.sh .
-CMD ["/app/bgutil-ytdlp-pot-provider.sh"]
+# Clone the repository
+RUN git clone --single-branch --branch 1.3.1 https://github.com/Brainicism/bgutil-ytdlp-pot-provider.git . && \
+    cd server && \
+    npm ci && \
+    npx tsc
+
+WORKDIR /app/server
+
+# Expose port 10000
+EXPOSE 10000
+
+# Run the server on port 10000
+CMD ["node", "build/main.js", "--port", "10000"]
