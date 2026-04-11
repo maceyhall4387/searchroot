@@ -1,20 +1,29 @@
-FROM node:20-alpine
-
-WORKDIR /app
-
-# Install git and build dependencies
-RUN apk add --no-cache git python3 make g++
-
-# Clone the repository
-RUN git clone --single-branch --branch 1.3.1 https://github.com/Brainicism/bgutil-ytdlp-pot-provider.git . && \
-    cd server && \
-    npm ci && \
-    npx tsc
-
+FROM node:25-bookworm-slim AS install
+USER node
 WORKDIR /app/server
 
-# Expose port 10000
-EXPOSE 10000
+RUN git clone https://github.com/Brainicism/bgutil-ytdlp-pot-provider.git /app/repo && \
+    cp /app/repo/server/* . 2>/dev/null || true && \
+    cp -r /app/repo/server/* . 2>/dev/null || true
 
-# Run the server on port 10000
-CMD ["node", "build/main.js", "--port", "10000"]
+COPY package.json package-lock.json ./
+
+RUN --mount=type=cache,target=/home/node/.npm,uid=1000,gid=1000 \
+    npm ci --omit=dev --no-audit --no-fund
+
+FROM install AS build_node
+
+RUN --mount=type=cache,target=/home/node/.npm,uid=1000,gid=1000 \
+    npm ci --no-audit --no-fund
+
+COPY types/ types/
+COPY tsconfig.json ./
+COPY src/ src/
+RUN npx tsc
+
+FROM install AS server_node
+
+COPY --from=build_node /app/server/build /app/server/build
+
+EXPOSE 4416
+ENTRYPOINT ["/usr/local/bin/node", "build/main.js"]
